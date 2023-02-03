@@ -54,7 +54,7 @@ describe("When I am on NewBill Page", () => {
         store: mockStore,
         localStorage: window.localStorage
       })
-      //window.onNavigate(ROUTES_PATH["NewBill"]);
+      window.onNavigate(ROUTES_PATH["NewBill"]);
       const handle = jest.fn((e) => newBillObject.handleChangeFile(e))
       const inputFile = screen.getByTestId('file')
       const img = new File(['img'], 'image.png', { type: 'image/png' })
@@ -67,7 +67,7 @@ describe("When I am on NewBill Page", () => {
           files: [img],
         },
       })
-      // //userEvent.upload(inputFile, img) fonctionne aussi
+
 
       expect(handle).toHaveBeenCalled()
       expect(inputFile.files[0]).toStrictEqual(img)
@@ -156,7 +156,7 @@ describe("When I am on NewBill Page", () => {
         vat: "20",
         pct: 20,
         commentary: "test",
-        fileUrl: "C:/Users/beaum/OneDrive/Images/Saved Pictures/wallpapertip_4k-wallpaper_2602.jpg",
+        fileUrl: "C:\Users\james\OneDrive\Images\Architecure_Contrast.png",
         fileName: null,
         status: "pending",
       }
