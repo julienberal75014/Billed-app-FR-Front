@@ -33,6 +33,7 @@ describe("When I am on NewBill Page", () => {
     router()
     window.onNavigate(ROUTES_PATH["NewBill"]);
   });
+  // test
   test("Then mail icon in vertical layout should be highlighted ", async () => {
     await waitFor(() => screen.getByTestId("icon-mail"));
     const windowIcon = screen.getByTestId("icon-mail");
@@ -40,10 +41,12 @@ describe("When I am on NewBill Page", () => {
 
   });
 
+  // test le formulaire de la nouvelle note de frais est affiché
   test("Then it should show the new bill form", () => {
     expect(screen.getByTestId("form-new-bill")).toBeTruthy();
   });
 
+  // test quand le format de l'image est valide
   describe("When I select a file and the file format is valid", () => {
     test('it should update the input field', () => {
       const html = NewBillUI()
@@ -62,6 +65,7 @@ describe("When I am on NewBill Page", () => {
       inputFile.addEventListener('change', (e) => {
         handle(e)
       })
+      // verifier le format de l'image
       fireEvent.change(inputFile, {
         target: {
           files: [img],
@@ -72,13 +76,10 @@ describe("When I am on NewBill Page", () => {
       expect(handle).toHaveBeenCalled()
       expect(inputFile.files[0]).toStrictEqual(img)
       expect(inputFile.files[0].name).toBe('image.png')
-
-
     })
-
-
   });
 
+  // test quand le format de l'image est invalide
   describe("When I select a file and the file format is not valid", () => {
     test('it should not update the input field', () => {
 
@@ -90,6 +91,8 @@ describe("When I am on NewBill Page", () => {
         store: mockStore,
         localStorage: window.localStorage
       })
+
+      // afficher une alerte
       window.alert = jest.fn();
 
       const handle = jest.fn((e) => newBillObject.handleChangeFile(e))
@@ -98,10 +101,11 @@ describe("When I am on NewBill Page", () => {
       inputFile.addEventListener('change', (e) => {
         handle(e)
       })
+
       const file = new File(['img'], 'test.pdf', { type: 'application/pdf' })
       userEvent.upload(inputFile, file)
+      // verifier qu'une fonction mock a été appelée
       expect(handle).toHaveBeenCalled()
-
       expect(inputFile.files[0]).toStrictEqual(file)
       expect(inputFile.files[0].name).toBe('test.pdf')
       expect(window.alert).toBeCalled()
@@ -114,6 +118,7 @@ describe("When I am on NewBill Page", () => {
 
   describe("when i click on the submit button", () => {
 
+    // test quand le formulaire est soumis
     test("the handleSubmit function is called", () => {
       const html = NewBillUI()
       document.body.innerHTML = html
@@ -127,15 +132,17 @@ describe("When I am on NewBill Page", () => {
         store: null,
         localStorage: null,
       });
-      const btnSendBill = screen.getByTestId("form-new-bill");
+      const sendNewBill = screen.getByTestId("form-new-bill");
 
       const handleSubmitMock = jest.fn((e) => newBill.handleSubmit(e));
-      btnSendBill.addEventListener("submit", handleSubmitMock);
-      fireEvent.submit(btnSendBill);
+      sendNewBill.addEventListener("submit", handleSubmitMock);
+      fireEvent.submit(sendNewBill);
       expect(handleSubmitMock).toHaveBeenCalled();
       expect(screen.getByText("Mes notes de frais")).toBeTruthy;
     });
 
+
+    // test quand le formulaire est soumis avec des informations valides et envoyé à l'API
     test("the handleSubmit function is executed with informations provided && send to the mock API POST", async () => {
 
       const store = null;
@@ -147,7 +154,7 @@ describe("When I am on NewBill Page", () => {
         localStorage,
       });
 
-
+      // je crée un objet avec les informations de la note de frais
       const billInformations = {
         type: "Transports",
         name: "Bordeaux",
@@ -170,11 +177,11 @@ describe("When I am on NewBill Page", () => {
       screen.getByTestId('pct').value = billInformations.pct
       screen.getByTestId('commentary').value = billInformations.commentary
 
-      const btnSendBill = screen.getByTestId("form-new-bill");
+      const sendNewBill = screen.getByTestId("form-new-bill");
 
       const handleSubmitMock = jest.fn((e) => newBillObject.handleSubmit(e));
-      btnSendBill.addEventListener("submit", handleSubmitMock);
-      fireEvent.submit(btnSendBill);
+      sendNewBill.addEventListener("submit", handleSubmitMock);
+      fireEvent.submit(sendNewBill);
       expect(handleSubmitMock).toHaveBeenCalled();
 
       const postSpy = jest.spyOn(mockStore, 'bills');
@@ -184,7 +191,7 @@ describe("When I am on NewBill Page", () => {
 
     });
 
-
+    // test quand le formulaire est soumis avec des informations valides mais l'API renvoie une erreur 404
     test("Then it should send the new bill to the mock API POST and fails with 404 message error", async () => {
 
       mockStore.bills.mockImplementationOnce(() => {
@@ -205,6 +212,7 @@ describe("When I am on NewBill Page", () => {
       const message = screen.getByText(/Erreur 404/);
       expect(message).toBeTruthy();
       console.error = jest.fn()
+      // vérifie qu'un certain nombre d'assertions sont appelées lors d'un test. Si le nombre d'appels ne correspond pas au nombre d'assertions attendues, le test échoue.
       expect.assertions(1);
       try {
         mockStore.bills
@@ -212,11 +220,12 @@ describe("When I am on NewBill Page", () => {
         expect(error).toEqual(console.error)
       }
     });
-
+    // test quand le formulaire est soumis avec des informations valides mais l'API renvoie une erreur 500
     test("Then it should send the new bill to the mock API POST and fails with 500 message error", async () => {
       mockStore.bills.mockImplementationOnce(() => {
         return {
           list: () => {
+            // retourne une erreur 500
             return Promise.reject(new Error("Erreur 500"))
           },
           create: () => {
@@ -235,6 +244,7 @@ describe("When I am on NewBill Page", () => {
       const message = screen.getByText(/Erreur 500/);
       expect(message).toBeTruthy();
       console.error = jest.fn()
+      // vérifie qu'un certain nombre d'assertions sont appelées lors d'un test. Si le nombre d'appels ne correspond pas au nombre d'assertions attendues, le test échoue.
       expect.assertions(1);
       try {
         mockStore.bills

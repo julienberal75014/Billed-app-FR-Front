@@ -12,6 +12,7 @@ import mockStore from "../__mocks__/store";
 import router from "../app/Router.js";
 import Bills from "../containers/Bills.js";
 
+// simule un module avec une version mockée
 jest.mock("../app/store", () => mockStore)
 
 describe("Given I am connected as an employee", () => {
@@ -21,7 +22,9 @@ describe("Given I am connected as an employee", () => {
     type: 'Employee'
   }))
 
+
   describe("When I am on Bills Page", () => {
+    // test l'icone de la facture est cliquable 
     test("Then bill icon in vertical layout should be highlighted", async () => {
       const root = document.createElement("div")
       root.setAttribute("id", "root")
@@ -33,6 +36,7 @@ describe("Given I am connected as an employee", () => {
       expect(windowIcon.classList.contains('active-icon')).toBeTruthy()
     })
 
+    // test la page de chargement est affichée
     describe("When I am on Bills Page but it is loading", () => {
       test("Then, Loading page should be rendered", () => {
         const html = BillsUI({ data: bills, loading: true });
@@ -42,6 +46,7 @@ describe("Given I am connected as an employee", () => {
       })
     })
 
+    // test la page d'erreur est affichée
     describe("When I am on Bills Page but back-end send an error message", () => {
       test("Then, Error page should be rendered", () => {
         const html = BillsUI({ data: bills, error: true });
@@ -51,6 +56,7 @@ describe("Given I am connected as an employee", () => {
       })
     })
 
+    // test les notes de frais sont affichées de la plus récente à la plus ancienne
     test("Then bills should be ordered from earliest to latest", () => {
       document.body.innerHTML = BillsUI({ data: bills })
       const dates = screen.getAllByText(/^([1-9]|[12][0-9]|3[01])[ ]\b.{3}\b[.][ ]\d{2}$/i).map(a => a.innerHTML)
@@ -60,6 +66,7 @@ describe("Given I am connected as an employee", () => {
     })
   })
 
+  // test la modal est affichée
   describe("When I am on Bills Page and I click on the eye icon", () => {
     test("Then a modal should open", () => {
       Object.defineProperty(window, 'localStorage', { value: localStorageMock })
@@ -68,7 +75,7 @@ describe("Given I am connected as an employee", () => {
       const html = BillsUI({ data: bills })
       document.body.innerHTML = html
 
-      $.fn.modal = jest.fn()// Prevent jQuery error
+      $.fn.modal = jest.fn() // Permet d'éviter les erreurs Jquery
       const onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({ pathname })
       }
@@ -122,6 +129,7 @@ describe("Given I am a user connected as Employee", () => {
         router()
       })
 
+      // test l'erreur 404 est affichée quand l'API ne répond pas
       test("fetches bills from an API and fails with 404 message error", async () => {
 
         mockStore.bills.mockImplementationOnce(() => {
@@ -137,6 +145,7 @@ describe("Given I am a user connected as Employee", () => {
         expect(errorMessage).toBeTruthy()
       })
 
+      // test l'erreur 500 est affichée quand l'API ne répond pas
       test("fetches bills from an API and fails with 500 message error", async () => {
         mockStore.bills.mockImplementationOnce(() => {
           return {

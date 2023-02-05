@@ -21,7 +21,6 @@ const row = (bill) => {
 }
 
 const rows = (data) => {
-  console.log(data)
 
   return (data && data.length) ? data.sort((a, b) => {
     let da = new Date(a.date),
